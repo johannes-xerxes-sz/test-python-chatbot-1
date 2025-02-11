@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div id="chatbox">
+        <div id="messages"></div>
+        <div id="input-section">
+            <input type="text" id="message" placeholder="Type your message..." />
+            <button id="send-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById("message");
+
+        function sendMessage() {
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage(userMessage, "user");
+
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendMessage(data.response, "bot");
+                appendSentiment(userMessage, data.sentiment);  // Display user sentiment
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                appendMessage("Sorry, something went wrong.", "bot");
+            });
+
+            messageInput.value = "";
+        }
+
+        function appendMessage(text, sender) {
+            const messagesDiv = document.getElementById("messages");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+
+            const textSpan = document.createElement("span");
+            textSpan.classList.add("text");
+            textSpan.textContent = text;
+
+            messageDiv.appendChild(textSpan);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function appendSentiment(userMessage, sentiment) {
+            const messagesDiv = document.getElementById("messages");
+
+            const sentimentDiv = document.createElement("div");
+            sentimentDiv.classList.add("sentiment");
+            sentimentDiv.textContent = `Sentiment for "${userMessage}": ${sentiment}`;
+
+            messagesDiv.appendChild(sentimentDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>
