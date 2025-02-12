@@ -13,12 +13,15 @@ def index():
 @app.route("/chat", methods=["POST"])
 def chat():
     user_message = request.json.get("message")
-    
+    print(f"Received message: {user_message}")  # Debugging
+
     if not user_message:
         return jsonify({"response": "Please type a message.", "sentiment": "Neutral"})
 
-    # Get the chatbot response and user sentiment
+    # Get the chatbot response and sentiment
     bot_response, user_sentiment = chatbot.get_response(user_message)
+    print(f"Bot response: {bot_response}, Sentiment: {user_sentiment}")  # Debugging
+
     return jsonify({"response": bot_response, "sentiment": user_sentiment})
 
 if __name__ == "__main__":

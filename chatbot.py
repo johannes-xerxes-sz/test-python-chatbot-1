@@ -46,16 +46,21 @@ class ChatBot:
         return sentiment["label"].capitalize()  # Return sentiment with proper casing (Positive, Negative, Neutral)
 
     def get_response(self, message):
-        # Detect the intent and analyze sentiment
+        print(f"User input: {message}")  # Debugging
+    
         intent = self.detect_intent(message)
-        sentiment = self.analyze_sentiment(message)
+        sentiment = self.analyze_sentiment(message) 
+
+        print(f"Detected Intent: {intent}, Sentiment: {sentiment}")  # Debugging
 
         # Respond based on the intent and adjust for negative sentiment if necessary
         if intent:
             if sentiment.lower() == "negative":
                 return "I’m sorry to hear that. Could you provide more details so I can assist you better?", sentiment
             else:
-                return random.choice(self.intents[intent]), sentiment
-
+                bot_response = random.choice(self.intents[intent])
+                print(f"Chosen bot response: {bot_response}")  # Debugging
+                return bot_response, sentiment
+            
         # Fallback response if intent is not detected
         return self.default_response, sentiment
